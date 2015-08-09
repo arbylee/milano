@@ -5,7 +5,6 @@ function Main() {};
 
 
 var Milano = function (state) {
-  this.alreadyScored = false;
   Phaser.Sprite.call(this, state.game, 0, 0, 'milano');
   this.alive = false;
   this.exists = false;
@@ -26,6 +25,8 @@ var Player = function (state) {
 
   this.body.collideWorldBounds = true;
   this.cursors = this.game.input.keyboard.createCursorKeys();
+  this.hungerLevel = 0;
+  this.maxHungerLevel = 70;
 }
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -52,6 +53,7 @@ Main.prototype = {
   create: function(){
     this.score = 0;
     this.scoreText = game.add.text(20, 20, "Score: 0", {font: "16px Arial", fill: "#FFFFFF"});
+    this.hungerText = game.add.text(GAME_WIDTH-100, 20, "Hunger: 0", {font: "16px Arial", fill: "#FFFFFF"});
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.player = new Player(this);
     this.game.physics.arcade.enable(this.player);
@@ -59,6 +61,9 @@ Main.prototype = {
 
     this.milanos = this.game.add.group();
     this.milanos.enableBody = true;
+
+    this.hungerIncreaseRate = 2000;
+    this.hungerIncreaseAmount = 8;
 
     for(i=0; i<80; i++){
       this.milanos.add(new Milano(this));
@@ -68,6 +73,7 @@ Main.prototype = {
   },
   update: function(){
     this.game.physics.arcade.overlap(this.player, this.milanos, this.milanoHitsPlayer, null, this);
+    this.hungerCheck();
   },
   spawnMilano: function(){
     var milano = this.milanos.getFirstDead();
@@ -81,23 +87,42 @@ Main.prototype = {
     var playerMouthRight = player.right - 7;
 
     if(milanoLeftEdge > playerMouthLeft && milanoRightEdge < playerMouthRight) {
-      this.addPoints();
+      this.eatMilano();
     }
     milano.kill();
   },
   addPoints: function(){
     this.score += 1;
     this.scoreText.text = "Score: " + this.score;
-    if(this.score >= 20){
-      this.game.state.start('win');
+  },
+  eatMilano: function(){
+    this.addPoints();
+    this.changeHunger(-(this.game.rnd.between(2,6)));
+  },
+  hungerCheck: function(){
+    if(this.game.time.time < this.nextHungerIncrease){return;};
+
+    this.changeHunger(this.hungerIncreaseAmount);
+
+    if(this.player.hungerLevel > this.player.maxHungerLevel){
+      this.game.state.start('gameOver', true, false, {milanosEaten: this.score});
     }
+    this.nextHungerIncrease = this.game.time.time + this.hungerIncreaseRate;
+  },
+  changeHunger: function(amount){
+    this.player.hungerLevel += amount;
+    this.hungerText.text = "Hunger: " + this.player.hungerLevel;
   }
 };
 
-function Win() {};
-Win.prototype = {
+function GameOver() {};
+GameOver.prototype = {
+  init: function(params){
+    this.milanosEaten = params.milanosEaten;
+  },
   create: function(){
-    this.game.add.text(240, 240, "You win!", {font: "24px Arial", fill: "#FFFFFF"});
+    this.game.add.text(220, 240, "Game Over!", {font: "24px Arial", fill: "#FFFFFF"});
+    this.game.add.text(180, 340, "You ate " + this.milanosEaten + " milanos!", {font: "24px Arial", fill: "#FFFFFF"});
     this.game.add.text(150, 440, "Press spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
   },
   update: function(){
@@ -108,5 +133,5 @@ Win.prototype = {
 }
 
 game.state.add('main', Main);
-game.state.add('win', Win);
+game.state.add('gameOver', GameOver);
 game.state.start('main');
