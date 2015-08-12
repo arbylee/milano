@@ -48,12 +48,14 @@ Main.prototype = {
     this.game.stage.backgroundColor = '#71c5cf';
     this.game.load.image('player', 'assets/openMouthFace.png');
     this.game.load.image('milano', 'assets/milano.png');
+    this.game.load.spritesheet('hungerBar', 'assets/barsSprite.png', 18, 60);
     this.cursors = game.input.keyboard.createCursorKeys();
   },
   create: function(){
     this.score = 0;
     this.scoreText = game.add.text(20, 20, "Score: 0", {font: "16px Arial", fill: "#FFFFFF"});
-    this.hungerText = game.add.text(GAME_WIDTH-100, 20, "Hunger: 0", {font: "16px Arial", fill: "#FFFFFF"});
+    this.hungerText = game.add.text(GAME_WIDTH-100, 20, "Hunger:", {font: "16px Arial", fill: "#FFFFFF"});
+    this.hungerBar = this.game.add.sprite(GAME_WIDTH-35, 20, 'hungerBar');
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
     this.player = new Player(this);
     this.game.physics.arcade.enable(this.player);
@@ -111,7 +113,8 @@ Main.prototype = {
   },
   changeHunger: function(amount){
     this.player.hungerLevel += amount;
-    this.hungerText.text = "Hunger: " + this.player.hungerLevel;
+    var hungerFrame = Math.floor(this.player.hungerLevel / this.player.maxHungerLevel * 10);
+    this.hungerBar.frame = hungerFrame;
   }
 };
 
