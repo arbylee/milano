@@ -16,7 +16,7 @@ Milano.prototype = Object.create(Phaser.Sprite.prototype);
 Milano.prototype.constructor = Milano;
 
 Milano.prototype.foodValue = function(){
-  return this.game.rnd.between(2,6);
+  return this.game.rnd.between(2,4);
 }
 
 var Player = function (state) {
