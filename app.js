@@ -15,6 +15,10 @@ var Milano = function (state) {
 Milano.prototype = Object.create(Phaser.Sprite.prototype);
 Milano.prototype.constructor = Milano;
 
+Milano.prototype.foodValue = function(){
+  return this.game.rnd.between(2,6);
+}
+
 var Player = function (state) {
   this.gameState = state;
   this.game = state.game;
@@ -25,7 +29,8 @@ var Player = function (state) {
 
   this.body.collideWorldBounds = true;
   this.cursors = this.game.input.keyboard.createCursorKeys();
-  this.hungerLevel = 0;
+  this.initialHungerLevel = 25;
+  this.hungerLevel = this.initialHungerLevel;
   this.maxHungerLevel = 70;
 }
 
@@ -89,7 +94,7 @@ Main.prototype = {
     var playerMouthRight = player.right - 7;
 
     if(milanoLeftEdge > playerMouthLeft && milanoRightEdge < playerMouthRight) {
-      this.eatMilano();
+      this.eatMilano(milano);
     }
     milano.kill();
   },
@@ -97,9 +102,9 @@ Main.prototype = {
     this.score += 1;
     this.scoreText.text = "Score: " + this.score;
   },
-  eatMilano: function(){
+  eatMilano: function(milano){
     this.addPoints();
-    this.changeHunger(-(this.game.rnd.between(2,6)));
+    this.changeHunger(-(milano.foodValue()));
   },
   hungerCheck: function(){
     if(this.game.time.time < this.nextHungerIncrease){return;};
