@@ -54,6 +54,9 @@ Main.prototype = {
     this.game.load.image('player', 'assets/openMouthFace.png');
     this.game.load.image('milano', 'assets/milano.png');
     this.game.load.spritesheet('hungerBar', 'assets/barsSprite.png', 18, 60);
+    this.game.load.audio('ow', 'assets/ow.m4a');
+    this.game.load.audio('mmm', 'assets/mmm.m4a');
+    this.game.load.audio('yum', 'assets/yum.m4a');
     this.cursors = game.input.keyboard.createCursorKeys();
   },
   create: function(){
@@ -65,6 +68,12 @@ Main.prototype = {
     this.player = new Player(this);
     this.game.physics.arcade.enable(this.player);
     this.player.body.collideWorldBounds = true;
+
+    this.eatSounds = [
+      this.game.add.audio('yum'),
+      this.game.add.audio('mmm')
+    ]
+    this.owSound = this.game.add.audio('ow');
 
     this.milanos = this.game.add.group();
     this.milanos.enableBody = true;
@@ -95,6 +104,8 @@ Main.prototype = {
 
     if(milanoLeftEdge > playerMouthLeft && milanoRightEdge < playerMouthRight) {
       this.eatMilano(milano);
+    } else {
+      this.owSound.play();
     }
     milano.kill();
   },
@@ -105,6 +116,7 @@ Main.prototype = {
   eatMilano: function(milano){
     this.addPoints();
     this.changeHunger(-(milano.foodValue()));
+    this.eatSounds[this.game.rnd.between(0, this.eatSounds.length-1)].play();
   },
   hungerCheck: function(){
     if(this.game.time.time < this.nextHungerIncrease){return;};
