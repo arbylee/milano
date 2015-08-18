@@ -144,7 +144,11 @@ GameOver.prototype = {
   create: function(){
     this.game.add.text(220, 240, "Game Over!", {font: "24px Arial", fill: "#FFFFFF"});
     this.game.add.text(180, 340, "You ate " + this.milanosEaten + " milanos!", {font: "24px Arial", fill: "#FFFFFF"});
-    this.game.add.text(150, 440, "Press spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
+    this.restartButton = this.game.add.text(110, 440, "Press here or spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
+    this.restartButton.inputEnabled = true;
+    this.restartButton.events.onInputDown.add(function(){
+      this.game.state.start('main');
+    }, this)
   },
   update: function(){
     if(this.game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
