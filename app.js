@@ -26,7 +26,7 @@ var Player = function (state) {
   Phaser.Sprite.call(this, this.game, 400, 550, 'player');
   this.game.add.existing(this);
   this.game.physics.arcade.enable(this);
-
+  this.anchor.setTo(0.5, 0.5);
   this.body.collideWorldBounds = true;
   this.cursors = this.game.input.keyboard.createCursorKeys();
   this.initialHungerLevel = 25;
@@ -41,9 +41,9 @@ Player.prototype.update = function(){
   this.body.velocity.x = 0;
 
   if(this.game.input.activePointer.isDown){
-    if(this.game.input.x < GAME_WIDTH/2){
+    if(this.game.input.x < this.x-5){
       this.moveLeft();
-    } else if (this.game.input.x > GAME_WIDTH/2){
+    } else if (this.game.input.x > this.x+5){
       this.moveRight();
     }
   } else {
