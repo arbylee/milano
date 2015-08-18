@@ -39,14 +39,34 @@ Player.prototype.constructor = Player;
 
 Player.prototype.update = function(){
   this.body.velocity.x = 0;
-  if(this.cursors.left.isDown && this.body.x > 0){
-    this.body.velocity.x -= this.moveSpeed;
-  }
-  if(this.cursors.right.isDown && this.body.x < GAME_WIDTH-this.body.width){
-    this.body.velocity.x += this.moveSpeed;
+
+  if(this.game.input.activePointer.isDown){
+    if(this.game.input.x < GAME_WIDTH/2){
+      this.moveLeft();
+    } else if (this.game.input.x > GAME_WIDTH/2){
+      this.moveRight();
+    }
+  } else {
+    if(this.cursors.left.isDown){
+      this.moveLeft();
+    }
+    if(this.cursors.right.isDown){
+      this.moveRight();
+    }
   }
 }
 
+Player.prototype.moveLeft = function(){
+  if(this.body.x > 0){
+    this.body.velocity.x -= this.moveSpeed;
+  }
+}
+
+Player.prototype.moveRight = function(){
+  if(this.body.x < GAME_WIDTH-this.body.width) {
+    this.body.velocity.x += this.moveSpeed;
+  }
+}
 
 Main.prototype = {
   preload: function(){
