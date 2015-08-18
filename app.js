@@ -130,8 +130,9 @@ Main.prototype = {
   },
   changeHunger: function(amount){
     this.player.hungerLevel += amount;
+    var lastFrameIndex = 9;
     var hungerFrame = Math.floor(this.player.hungerLevel / this.player.maxHungerLevel * 10);
-    this.hungerBar.frame = hungerFrame;
+    this.hungerBar.frame = Math.min(hungerFrame, lastFrameIndex);
   }
 };
 
