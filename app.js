@@ -1,5 +1,5 @@
-var GAME_WIDTH = 600;
-var GAME_HEIGHT = 600;
+var GAME_WIDTH = 640;
+var GAME_HEIGHT = 920;
 var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, '');
 function Main() {};
 
@@ -23,7 +23,7 @@ var Player = function (state) {
   this.gameState = state;
   this.game = state.game;
   this.moveSpeed = 250;
-  Phaser.Sprite.call(this, this.game, 400, 550, 'player');
+  Phaser.Sprite.call(this, this.game, GAME_WIDTH/2, GAME_HEIGHT-20, 'player');
   this.game.add.existing(this);
   this.game.physics.arcade.enable(this);
   this.anchor.setTo(0.5, 0.5);
@@ -106,6 +106,13 @@ Main.prototype = {
     }
 
     this.game.time.events.loop(this.game.rnd.between(250, 450), this.spawnMilano, this);
+
+    this.game.input.maxPointers = 1;
+
+    this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    this.game.scale.setResizeCallback(function () {
+        this.game.scale.setResizeCallback(this.resize, this);
+    }, this);
   },
   update: function(){
     this.game.physics.arcade.overlap(this.player, this.milanos, this.milanoHitsPlayer, null, this);
@@ -162,9 +169,9 @@ GameOver.prototype = {
     this.milanosEaten = params.milanosEaten;
   },
   create: function(){
-    this.game.add.text(220, 240, "Game Over!", {font: "24px Arial", fill: "#FFFFFF"});
-    this.game.add.text(180, 340, "You ate " + this.milanosEaten + " milanos!", {font: "24px Arial", fill: "#FFFFFF"});
-    this.restartButton = this.game.add.text(110, 440, "Press here or spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
+    this.game.add.text(240, 240, "Game Over!", {font: "24px Arial", fill: "#FFFFFF"});
+    this.game.add.text(200, 340, "You ate " + this.milanosEaten + " milanos!", {font: "24px Arial", fill: "#FFFFFF"});
+    this.restartButton = this.game.add.text(130, 440, "Press here or spacebar to restart", {font: "24px Arial", fill: "#FFFFFF"});
     this.restartButton.inputEnabled = true;
     this.restartButton.events.onInputDown.add(function(){
       this.game.state.start('main');
